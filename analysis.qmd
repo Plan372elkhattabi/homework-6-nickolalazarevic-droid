@@ -4,6 +4,8 @@ author: Nickola Lazarevic
 ---
 
 ```{r}
+library(tidyverse)
+
 data = read_csv("TS3_Raw_tree_data.csv")
 head(data)
 
@@ -11,14 +13,14 @@ head(data)
 # Check that every City value matches our pattern
 all(str_detect(data$City, "^.+, [:upper:]{2}$"))
 
-# See what str_match returns: total match + one column per capture group
+# See what str_match returns: total match + one column per group
 str_match(data$City, "^(.+), ([:upper:]{2})$")
 
-# Assign the captured groups to new columns
+# Assign the groups to new columns
 data[,c("city_name", "state")] = str_match(data$City, "^(.+), ([:upper:]{2})$")[,2:3]
 head(data)
 
-# Records per state
+# Display thw records per state
 state_counts <- data %>% 
   group_by(state) %>% 
   summarize(n = n()) %>% 
@@ -26,7 +28,7 @@ state_counts <- data %>%
 
 state_counts
 
-# Bar plot
+# Data Table
 Table_plot <- ggplot(state_counts, aes(x = state, y = n)) +
   geom_col()
 
@@ -36,12 +38,8 @@ view(Table_plot)
 ```
 
 
-
-
-
-
 ```{r}
-# Filter the dataset down to NC and SC for the rest of the assignment
+# Filter the dataset down to NC and SC 
 sc_nc_data <- filter(data, state == "NC" | state == "SC")
 
 # Cities in each state
@@ -57,14 +55,14 @@ view(Table_sc_nc)
 
 ```{r}
 # Confirm the pattern matches
-all(str_detect(data$ScientificName, "^[:alpha:]+ [:alpha:]+"))
+all(str_detect(sc_nc_data$ScientificName, "^[:alpha:]+ [:alpha:]+"))
 
 # Extract the genus (everything before the first space)
-data$genus <- str_match(data$ScientificName, "^([:alpha:]+)")[,2]
+sc_nc_data$genus <- str_match(sc_nc_data$ScientificName, "^([:alpha:]+)")[,2]
 head(data)
 
 # Average crown diameter by genus
-Avg_crown <- data %>% 
+Avg_crown <- sc_nc_data %>% 
   group_by(genus) %>% 
   summarize(avg_crown = mean(`AvgCdia (m)`, na.rm = TRUE), n = n()) %>% 
   arrange(-avg_crown)
@@ -79,8 +77,8 @@ head(Avg_crown, 1)
 ```
 
 ```{r}
-# Average age (and crown) by genus
-genus_age <- data %>% 
+# Average age and crown size by genus
+genus_age <- sc_nc_data %>% 
   group_by(genus) %>% 
   summarize(avg_age = mean(Age, na.rm = TRUE),
             avg_crown = mean(`AvgCdia (m)`, na.rm = TRUE),
@@ -89,7 +87,7 @@ genus_age <- data %>%
 
 genus_age
 
-# Plot age vs crown diameter at the genus level
+# Plot age vs crown for genus grouops
 ggplot(genus_age, aes(x = avg_age, y = avg_crown)) +
   geom_point()
 
