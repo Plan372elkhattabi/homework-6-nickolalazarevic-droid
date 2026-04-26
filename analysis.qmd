@@ -94,6 +94,11 @@ ggplot(genus_age, aes(x = avg_age, y = avg_crown)) +
 #Based on the graph comparing average age of the tree and its average crown size we see that there is a nonlinear relationship meaning that age of the tree does not significantly affect the crown size
 ```
 
+```{r}
+# I used AI to help me with debugging. The use of n() inside summarize() to count the number of observations per group, as in summarize(avg_crown = mean(AvgCdia (m), na.rm = TRUE), n = n()). AI clarified that n() is a tidyverse function that returns the row count for the current group. The use of backticks around column names containing spaces or special characters, as in `AvgCdia (m)`. AI explained that R requires backticks to reference column names that aren't valid identifiers. Overall AI helped me understand how to properly use the n() function and when to use backticks.
+
+```
+
 
 
 
